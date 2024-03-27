@@ -154,7 +154,7 @@ class _HomePageState extends State<HomePage> {
                 height: MediaQuery.of(context).size.height * .015,
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.height * .2,
+                height: MediaQuery.of(context).size.height * .3,
                 child: FutureBuilder(
                   future: _monthlyTotalsFuture,
                   builder: (context, snapshot) {
@@ -164,7 +164,8 @@ class _HomePageState extends State<HomePage> {
                           List.generate(monthCount, (index) {
                         int year = startYear + (startMonth + index - 1) ~/ 12;
                         int month = (startMonth + index - 1) % 12 + 1;
-                        String yearMonthKey = '$year-$month';
+                        String yearMonthKey = '$month-$year';
+
                         return monthlyTotals[yearMonthKey] ?? 0.0;
                       });
 

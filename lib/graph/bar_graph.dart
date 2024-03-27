@@ -17,9 +17,15 @@ class BarGraph extends StatefulWidget {
 
 class _BarGraphState extends State<BarGraph> {
   List<IndividualBar> barData = [];
+
   void initilizeBarData() {
-    barData = List.generate(widget.monthlySummary.length,
-        (index) => IndividualBar(x: index, y: widget.monthlySummary[index]));
+    barData = List.generate(
+      widget.monthlySummary.length,
+      (index) => IndividualBar(
+        x: index,
+        y: widget.monthlySummary[index],
+      ),
+    );
   }
 
   final ScrollController _scrollController = ScrollController();
@@ -30,11 +36,10 @@ class _BarGraphState extends State<BarGraph> {
 
   @override
   Widget build(BuildContext context) {
-    initilizeBarData();
-
     double barWidth = 20;
     double spaceBetweenBars = 15;
 
+    initilizeBarData();
     return SingleChildScrollView(
       controller: _scrollController,
       scrollDirection: Axis.horizontal,
@@ -44,15 +49,17 @@ class _BarGraphState extends State<BarGraph> {
         child: BarChart(
           BarChartData(
             minY: 0,
-            maxY: 150,
+            maxY: 200,
             gridData: const FlGridData(show: false),
             borderData: FlBorderData(show: false),
             titlesData: FlTitlesData(
               show: true,
-              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              topTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              leftTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
               rightTitles:
-                  AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
               bottomTitles: AxisTitles(
                   sideTitles: SideTitles(
                       showTitles: true,
@@ -60,21 +67,22 @@ class _BarGraphState extends State<BarGraph> {
                       reservedSize: 24)),
             ),
             barGroups: barData
-                .map((data) => BarChartGroupData(
-                      x: data.x,
-                      barRods: [
-                        BarChartRodData(
-                          toY: data.y,
-                          width: 20,
-                          borderRadius: BorderRadius.circular(5),
-                          color: Colors.deepPurple.shade200,
-                          backDrawRodData: BackgroundBarChartRodData(
-                              show: true,
-                              toY: 150,
-                              color: Colors.grey.shade300),
-                        )
-                      ],
-                    ))
+                .map(
+                  (data) => BarChartGroupData(
+                    x: data.x,
+                    barRods: [
+                      BarChartRodData(
+                        toY: data.y,
+                        // toY: 100,
+                        width: 20,
+                        borderRadius: BorderRadius.circular(5),
+                        color: Colors.deepPurple.shade200,
+                        backDrawRodData: BackgroundBarChartRodData(
+                            show: true, toY: 200, color: Colors.grey.shade300),
+                      )
+                    ],
+                  ),
+                )
                 .toList(),
           ),
         ),
