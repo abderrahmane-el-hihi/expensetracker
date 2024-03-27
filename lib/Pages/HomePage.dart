@@ -17,7 +17,9 @@ class _HomePageState extends State<HomePage> {
   //text controllers
   TextEditingController nameController = TextEditingController();
   TextEditingController amountController = TextEditingController();
-  Future<Map<int, double>>? _monthlyTotalsFuture;
+  Future<Map<String, double>>? _monthlyTotalsFuture;
+  Future<double>? _claculateCurrentMonthTotal;
+
   @override
   void initState() {
     //read db
@@ -31,6 +33,9 @@ class _HomePageState extends State<HomePage> {
   void refreshGraphData() {
     _monthlyTotalsFuture = Provider.of<ExpenseDatabase>(context, listen: false)
         .calculateMonthlyTotals();
+    _claculateCurrentMonthTotal =
+        Provider.of<ExpenseDatabase>(context, listen: false)
+            .calculateCurrentMonthTotals();
   }
 
   //new expense box
@@ -119,7 +124,22 @@ class _HomePageState extends State<HomePage> {
         appBar: AppBar(
           centerTitle: true,
           elevation: 1,
-          title: const Text('Expenses'),
+          title: FutureBuilder<double>(
+            future: _claculateCurrentMonthTotal,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(snapshot.data!.toStringAsFixed(2) + "MAD"),
+                    Text(getCurrentMonthName()),
+                  ],
+                );
+              } else {
+                return const Text("Loading...");
+              }
+            },
+          ),
           backgroundColor: Colors.deepPurple.shade50,
         ),
         floatingActionButton: FloatingActionButton(
@@ -139,9 +159,14 @@ class _HomePageState extends State<HomePage> {
                   future: _monthlyTotalsFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.done) {
-                      final monthlyTotals = snapshot.data ?? {};
-                      List<double> monthlySummary = List.generate(monthCount,
-                          (index) => monthlyTotals[startMonth + 1] ?? 0.0);
+                      Map<String, double> monthlyTotals = snapshot.data ?? {};
+                      List<double> monthlySummary =
+                          List.generate(monthCount, (index) {
+                        int year = startYear + (startMonth + index - 1) ~/ 12;
+                        int month = (startMonth + index - 1) % 12 + 1;
+                        String yearMonthKey = '$year-$month';
+                        return monthlyTotals[yearMonthKey] ?? 0.0;
+                      });
 
                       return BarGraph(
                           monthlySummary: monthlySummary,
@@ -153,6 +178,9 @@ class _HomePageState extends State<HomePage> {
                     }
                   },
                 ),
+              ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * .04,
               ),
               //Expanses List UI
               Expanded(
@@ -185,7 +213,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
-                            vertical: 4, horizontal: 12),
+                            vertical: 5, horizontal: 25),
                         child: Container(
                           decoration: BoxDecoration(
                             color: Colors.deepPurple.shade100,

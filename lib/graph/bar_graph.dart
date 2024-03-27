@@ -22,6 +22,12 @@ class _BarGraphState extends State<BarGraph> {
         (index) => IndividualBar(x: index, y: widget.monthlySummary[index]));
   }
 
+  final ScrollController _scrollController = ScrollController();
+  void scrollToEnd() {
+    _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+        duration: const Duration(seconds: 1), curve: Curves.fastOutSlowIn);
+  }
+
   @override
   Widget build(BuildContext context) {
     initilizeBarData();
@@ -30,6 +36,7 @@ class _BarGraphState extends State<BarGraph> {
     double spaceBetweenBars = 15;
 
     return SingleChildScrollView(
+      controller: _scrollController,
       scrollDirection: Axis.horizontal,
       child: SizedBox(
         width:
@@ -60,7 +67,7 @@ class _BarGraphState extends State<BarGraph> {
                           toY: data.y,
                           width: 20,
                           borderRadius: BorderRadius.circular(5),
-                          color: Colors.grey.shade800,
+                          color: Colors.deepPurple.shade200,
                           backDrawRodData: BackgroundBarChartRodData(
                               show: true,
                               toY: 150,
